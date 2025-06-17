@@ -12,10 +12,9 @@ The robot detects the Z-contact point of each block using **force sensing**, and
 
 https://github.com/user-attachments/assets/b0cc4195-48fa-41e2-95e9-36330a62b2d2
 
+```bash
+ros2 run assignment move_block
+```
 
 ---
 
-## ▶️ Run the Demo
-
-```bash
-ros2 run assignment move_block
