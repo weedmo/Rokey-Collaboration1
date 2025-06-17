@@ -21,6 +21,8 @@ setup(
     entry_points={
         'console_scripts': [
             "move_gear = assignment.move_gear:main",
+            "move_block = assignment.move_block:main",
+            
         ],
     },
 )

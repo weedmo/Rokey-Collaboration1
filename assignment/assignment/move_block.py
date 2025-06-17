@@ -32,7 +32,7 @@ def main(args=None):
             get_tool,
             get_tcp,
             get_posx,
-            
+            get_current_posx,
             # move
             wait,
             set_tool,
@@ -48,7 +48,6 @@ def main(args=None):
             DR_FC_MOD_REL,
             DR_AXIS_Z,
             DR_BASE,
-            DR_TOOL,
             release_force,
             
             move_periodic,
@@ -64,15 +63,8 @@ def main(args=None):
         return
     
     home = posj(0, 0, 90.0, 0, 90, 0)
-    pos = posx(249.73, 93.68, 104.84, 30.25, 179.95, 30.24)
-    pos2 = posx(359.73, 93.68, 104.84, 30.25, 179.95, 30.24)
-    pos3 = posx(249.73, -16.32, 104.84, 30.25, 179.95, 30.24)
-    pos4 = posx(359.73, -16.32, 104.84, 30.25, 179.95, 30.24)
-
-    next_pos = posx(551.01, 88.58, 26.82, 29.8, 179.95, 29.79)
-    next_pos2 = posx(661.01, 88.58, 26.82, 29.8, 179.95, 29.79)
-    next_pos3 = posx(551.01, -21.42, 26.82, 29.8, 179.95, 29.79)
-    next_pos4 = posx(661.01, -21.42, 26.82, 29.8, 179.95, 29.79)
+    pos = posx(252.87, 95.18, 74.84, 30.25, 179.95, 30.24)
+    next_pos = posx(551.11, 91.0, 116.82, 29.8, 179.95, 29.79)
     
     # ====================
     # grip
@@ -88,81 +80,147 @@ def main(args=None):
     
     def check(pose):
         movel(pose, vel=VEL, acc=ACC, ref=DR_BASE)
+        
         task_compliance_ctrl()
         time.sleep(0.1)
         set_desired_force(
-            fd=[0, 0, -15, 0, 0, 0],
-            dir=[0, 0, 1, 0, 0, 0],
-            mod=DR_FC_MOD_REL
-        )
+            fd=[0, 0, -15, 0, 0, 0], 
+            dir=[0, 0, 1, 0, 0, 0], 
+            mod=DR_FC_MOD_REL)
         time.sleep(0.1)
-
-        # 힘 조건 만족할 때까지 대기
-        start = time.time()
-        while not check_force_condition(DR_AXIS_Z, max=10) and time.time() - start < 5.0:
+        while not check_force_condition(DR_AXIS_Z, max=10):
             pass
-
-        # 힘 제어 해제
+        pos = get_current_posx()
+        contact_z = pos[0][2]
         release_force()
         time.sleep(0.1)
         release_compliance_ctrl()
-        z = list(get_posx())[2]
+
+        print(f"📌 접촉 z 위치: {contact_z}")
+
+        if contact_z is not None:
+            retreat_pose = list(pose)
+            retreat_pose[2] = contact_z + 80
+            movel(retreat_pose, vel=VEL, acc=ACC, ref=DR_BASE)
+
+        return contact_z
+
+
         
     def pick(pose):
+        release()
         movel(pose, vel=VEL, acc=ACC, ref=DR_BASE)
-
-        down_pose = list(pose)
-        down_pose[2] -= 80
-        movel(down_pose, vel=VEL, acc=ACC, ref=DR_BASE)
         grip()
-
-        movel(pose, vel=VEL, acc=ACC, ref=DR_BASE)
+        up_pose = list(pose)
+        up_pose[2] += 80
+        movel(up_pose, vel=VEL, acc=ACC, ref=DR_BASE)
 
 
     def place(pose, use_force=False):
+        # Step 1: 원래 위치로 이동
         movel(pose, vel=VEL, acc=ACC, ref=DR_BASE)
 
-        go_and_down_pose = list(pose)
-        go_and_down_pose[2] -= 80.0
-        movel(go_and_down_pose, vel=VEL, acc=ACC, ref=DR_BASE)
-        # release()
-
-        # movel(go_pose, vel=VEL, acc=ACC, ref=DR_BASE)
-
-        if use_force:
-            # 힘 제어 활성화
-            task_compliance_ctrl()
-            time.sleep(0.1)
-            set_desired_force(
-                fd=[0, 0, -15, 0, 0, 0],
-                dir=[0, 0, 1, 0, 0, 0],
-                mod=DR_FC_MOD_REL
-            )
-            time.sleep(0.1)
-
-            # 힘 조건 만족할 때까지 대기
-            start = time.time()
-            while not check_force_condition(DR_AXIS_Z, max=10) and time.time() - start < 5.0:
-                pass
-
-            # 힘 제어 해제
-            release_force()
-            time.sleep(0.1)
-            release_compliance_ctrl()
+        
+        # Step 2: 약간만 내려가기
+        pre_contact_pose = list(pose)
+        pre_contact_pose[2] -= 60.0  # 미리 살짝 내려감
+        movel(pre_contact_pose, vel=VEL, acc=ACC, ref=DR_BASE)
+        task_compliance_ctrl()
+        time.sleep(0.1)
+        set_desired_force(
+            fd=[0, 0, -15, 0, 0, 0], 
+            dir=[0, 0, 1, 0, 0, 0], 
+            mod=DR_FC_MOD_REL)
+        time.sleep(0.1)
+        while not check_force_condition(DR_AXIS_Z, max=10):
+            pass
+        release_force()
+        time.sleep(0.1)
+        release_compliance_ctrl()
 
         release()
         wait(1.0)
+
+        # Step 7: 원래 위치로 복귀
         movel(pose, vel=VEL, acc=ACC, ref=DR_BASE)
 
-    # ====================    
+    def is_in_range(z, low, high):
+        return low <= z < high
+
+    def get_column_by_z(z):
+        if z >= 64:
+            return 0
+        elif z >= 54:
+            return 1
+        elif z >= 44:
+            return 2
+        else:
+            return -1  # 예외 처리용
+
+    def full_pick_and_place(start_pos, base_place_pos):
+        pos = start_pos.copy()
+        block_count = 0
+        column_counts = [0, 0, 0]  # 열(col) 별로 몇 개 놓았는지 추적
+
+        for x in range(3):
+            for y in range(3):
+                print(f"\n🔄 {block_count+1}번째 블록 처리 중...")
+                grip()
+
+                z = check(pos)  # 힘 감지로 접촉 z 얻기
+                if z is None:
+                    print("❌ z 감지 실패, 스킵")
+                    continue
+
+                # 픽 위치 수정
+                pick_pos = pos.copy()
+                pick_pos[2] = z - 10
+                pick(pick_pos)
+
+                # place 위치 결정
+                col = get_column_by_z(z)
+                if col == -1 or column_counts[col] >= 3:
+                    print(f"⚠ 유효하지 않은 col={col} 또는 이미 3개 배치됨, 스킵")
+                    continue
+
+                row = column_counts[col]
+                place_pos = base_place_pos.copy()
+                place_pos[0] += col * 51.5  # 열 이동 (X)
+                place_pos[1] -= row * 51.5  # 행 이동 (Y, 아래로 정렬)
+                place_pos[2] = z + 80     # 높이
+
+                place(place_pos)
+                column_counts[col] += 1
+                block_count += 1
+
+                # 다음 픽 위치로 이동
+                pos[1] -= 51.5  # y축 이동
+
+            # y축 다 했으면 x축 이동하고 y축 복원
+            pos[0] += 51.5
+            pos[1] = start_pos[1]
+
+        movej(home, vel=VEL, acc=ACC)
+        print("✅ 모든 작업 완료")
 
     while rclpy.ok():
-        
+        tool_name = get_tool()
+        tcp_name = get_tcp()
+
+        print(f"Tool: {tool_name}, TCP: {tcp_name}")
+        if tool_name == "" or tcp_name == "":
+            rclpy.shutdown()
+            return
+
         movej(home, vel=VEL, acc=ACC)
-        release()
 
-        break
+        # pick and place 수행
+        full_pick_and_place(pos, next_pos)
 
+        # 모든 작업 완료 후 종료 또는 반복
+        print("🔁 반복을 원하면 [Ctrl+C]를 누르지 말고 계속 진행됩니다.")
+        time.sleep(3)  # 혹은 다음 루프 전 대기 시간
+        break  # ← 반복을 원한다면 이 줄을 제거
 
 if __name__ == "__main__":
     main()
