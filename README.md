@@ -5,7 +5,8 @@ This project demonstrates a simple **Pick & Place** system using the **Doosan M0
 
 The robot picks up 4 gears from predefined positions and places them at corresponding target positions using optional **force control** for accurate placement.
 
-
+[![Demo Video](https://img.youtube.com/vi/bPqb-HWBBT0/0.jpg)](https://youtu.be/bPqb-HWBBT0)  
+▶️ [Watch on YouTube](https://youtu.be/bPqb-HWBBT0)
 
 ### demo Run
 
