@@ -2,14 +2,6 @@
 
 ## 🦾 Doosan Robot move block
 
-
-
-## 🎬 Demo Video
-
-https://github.com/user-attachments/assets/b0cc4195-48fa-41e2-95e9-36330a62b2d2
-
----
-
 ## ⚙️ Overview
 
 This project demonstrates a **Pick & Place system** using the **Doosan M0609 collaborative robot**.  
