@@ -142,7 +142,7 @@ def main(args=None):
         pick_place = posx(180.35, 271.95, FIXED_Z, 41.76, -180.0, -45.47)
 
         # ✅ 여기를 사용자가 바꿔주세요 (가로 도미노 pick 좌표)
-        horizontal_pick_place = posx(492.92, 258.55, 75.63, 97.75, 179.98, 97.71)  # ← 수정 가능
+        horizontal_pick_place = posx(492.66, 258.77, 65.21, 54.69, -179.53, 57.09)  # ← 수정 가능
 
         for i, pose in enumerate(pose_array_data):
             x = pose.position.x * 10 + 200
