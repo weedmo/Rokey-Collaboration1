@@ -1,6 +1,27 @@
 # Rokey-Collaboration1
 ## ⚙️ Doosan Robot move gear
 
+This project demonstrates a simple **Pick & Place** system using the **Doosan M0609** collaborative robot.
+
+The robot picks up 4 gears from predefined positions and places them at corresponding target positions using optional **force control** for accurate placement.
+
+## 📋 Features
+- Uses `movej`, `movel`, `amove_periodic` for movement
+- `force control` is applied optionally during placement
+- Position list is hardcoded for simplicity
+- Includes digital output control for gripping (`grip()` / `release()`)
+
+## 🔧 How It Works
+1. Robot moves to home position
+2. Picks up gears from 4 source poses
+3. Places each gear at its corresponding target pose
+4. Uses force-based contact detection during placement to ensure correct attachment
+
+## 🚀 Run
+
+```bash
+ros2 run assignment move_gear
+```
 ## 🦾 Doosan Robot move block
 
 This project demonstrates a **Pick & Place system** using the **Doosan M0609 collaborative robot**.  
