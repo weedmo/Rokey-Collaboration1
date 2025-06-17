@@ -1,8 +1,7 @@
 # Rokey-Collaboration1
+## ⚙️ Doosan Robot move gear
 
 ## 🦾 Doosan Robot move block
-
-## ⚙️ Overview
 
 This project demonstrates a **Pick & Place system** using the **Doosan M0609 collaborative robot**.  
 The robot detects the Z-contact point of each block using **force sensing**, and then sorts the blocks into columns based on height.
