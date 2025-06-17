@@ -22,6 +22,8 @@ setup(
         'console_scripts': [
             "move_gear = assignment.move_gear:main",
             "move_block = assignment.move_block:main",
+            "move_lego = assignment.move_lego:main",
+            "move_home = assignment.move_home:main",
             
         ],
     },
