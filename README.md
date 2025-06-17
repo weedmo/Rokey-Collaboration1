@@ -67,7 +67,7 @@ Thanks to these wonderful people who have contributed to this project:
     <td align="center">
       <a href="https://github.com/DONGHO1206">
         <img src="https://github.com/DONGHO1206.png" width="100px;" alt="DONGHO1206"/><br />
-        <sub><b>jsbae-RL</b></sub>
+        <sub><b>DONGHO1206</b></sub>
       </a>
     </td>
 
