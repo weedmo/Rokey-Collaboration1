@@ -40,10 +40,19 @@ Output: Rearranged and attached to a new location based on predefined layout
 
 https://github.com/user-attachments/assets/869d0c86-701b-425b-8b63-eac0a6d21d30
 
-
 ### demo run
 ```bash
 ros2 run assignment move_lego
+```
+---
+
+## 🦾 Doosan Robot move object
+
+[Screencast from 06-18-2025 12_43_21 PM.webm](https://github.com/user-attachments/assets/d920f07d-990f-41e8-83e0-f0d15d077895)
+
+### demo run
+```bash
+ros2 run assignment move_object
 ```
 ---
 ## 👥 Contributors
