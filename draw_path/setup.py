@@ -24,7 +24,7 @@ setup(
     entry_points={
         'console_scripts': [
             'draw_path=draw_path.draw_path_ver3:main',
-            'cal_yaw=draw_path.cal_posearray_ver4:main',
+            'cal_yaw=draw_path.cal_posearray_ver5:main',
             'pose_downsample=draw_path.pose_resampled:main'
         ],
     },

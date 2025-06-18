@@ -7,6 +7,41 @@ from geometry_msgs.msg import PoseArray, Pose
 import tkinter as tk
 import threading
 import math
+import numpy as np
+
+# ----------- Bezier 보간 함수 -----------
+def cubic_bezier(p0, p1, p2, p3, n_points=10):
+    t = np.linspace(0, 1, n_points)
+    curve = (
+        ((1-t)**3)[:, None] * p0 +
+        3 * ((1-t)**2)[:, None] * t[:, None] * p1 +
+        3 * (1-t)[:, None] * (t**2)[:, None] * p2 +
+        (t**3)[:, None] * p3
+    )
+    return curve
+
+def bezier_path(points, n_points_per_seg=10):
+    points = np.array(points, dtype=float)
+    if len(points) < 4:
+        return [tuple(map(float, p)) for p in points]
+    curve = []
+    for i in range(0, len(points)-3, 3):
+        seg = cubic_bezier(points[i], points[i+1], points[i+2], points[i+3], n_points_per_seg)
+        if i > 0:
+            seg = seg[1:]  # 앞점 중복 제거
+        curve.append(seg)
+    # 마지막 남은 점(끝점 부근)은 선형으로 이어붙임
+    if (len(points)-1) % 3 != 0:
+        tail = points[-2:]
+        if len(tail) > 1:
+            linear = np.linspace(tail[0], tail[1], n_points_per_seg)
+            linear = linear[1:]  # 앞점 중복 제거
+            curve.append(linear)
+        else:
+            curve.append(tail)
+    curve = np.vstack(curve)
+    return [tuple(map(float, p)) for p in curve]
+# ---------------------------------------
 
 class PathPubSubNode(Node):
     def __init__(self):
@@ -15,22 +50,36 @@ class PathPubSubNode(Node):
         self.pub_i32 = self.create_publisher(Int32MultiArray, 'domino_pose_array_with_index', 10)
         self.sub = self.create_subscription(Float32MultiArray, 'drawing_path_resampled', self.cb, 10)
         self.latest_path = []
+        self.bezier_path = []
 
     def cb(self, msg):
         arr = msg.data
         if len(arr) < 2 or len(arr) % 2 != 0:
             self.get_logger().warn("수신한 좌표 길이가 잘못되었습니다.")
+            self.latest_path = []
+            self.bezier_path = []
             return
-        self.latest_path = [(arr[i], arr[i+1]) for i in range(0, len(arr), 2)]
+        self.latest_path = [(float(arr[i]), float(arr[i+1])) for i in range(0, len(arr), 2)]
+        if len(self.latest_path) >= 4:
+            self.bezier_path = bezier_path(self.latest_path, n_points_per_seg=3)
+        else:
+            self.bezier_path = self.latest_path[:]
 
     def publish_posearray(self, path):
+        # ROS2 퍼블리셔 handle 체크 및 상태 확인
+        if not hasattr(self, "pub_pose") or getattr(self.pub_pose, "handle", None) is None:
+            print("[WARN] ROS2 퍼블리셔가 이미 소멸되었습니다. Publish를 생략합니다.")
+            return
+        if not rclpy.ok():
+            print("[WARN] ROS2가 이미 종료되어 있어 publish를 생략합니다.")
+            return
         pa = PoseArray()
         pa.header.stamp = self.get_clock().now().to_msg()
         pa.header.frame_id = "base_link"
         for i in range(len(path) - 1):
             x1, y1 = path[i]
             x2, y2 = path[i+1]
-            yaw = math.atan2(y2 - y1, x2 - x1)  # ROS publish는 원본 기준
+            yaw = math.atan2(y2 - y1, x2 - x1)
             pose = Pose()
             pose.position.x = float(x1)
             pose.position.y = float(y1)
@@ -52,19 +101,32 @@ class PathPubSubNode(Node):
             pose.orientation.z = math.sin(yaw / 2.0)
             pose.orientation.w = math.cos(yaw / 2.0)
             pa.poses.append(pose)
-        self.pub_pose.publish(pa)
-        self.get_logger().info(f'PoseArray published with {len(pa.poses)} poses')
-        self.get_logger().info(f'{pa} poses')
+        try:
+            self.pub_pose.publish(pa)
+            self.get_logger().info(f'PoseArray published with {len(pa.poses)} poses')
+            self.get_logger().info(f'{pa} poses')
+        except Exception as e:
+            print(f"[EXCEPTION] ROS2 publish_posearray 예외 발생: {e}")
 
     def publish_with_index(self, selected_indices, n_domino):
+        # ROS2 퍼블리셔 handle 체크 및 상태 확인
+        if not hasattr(self, "pub_i32") or getattr(self.pub_i32, "handle", None) is None:
+            print("[WARN] ROS2 퍼블리셔가 이미 소멸되었습니다. Publish를 생략합니다.")
+            return
+        if not rclpy.ok():
+            print("[WARN] ROS2가 이미 종료되어 있어 publish를 생략합니다.")
+            return
         data = []
         for idx in selected_indices:
             data += [idx, n_domino]
         msg = Int32MultiArray()
         msg.data = data
-        self.pub_i32.publish(msg)
-        self.get_logger().info(f'Int32MultiArray (index, n_domino) published with {len(selected_indices)} dominos')
-        self.get_logger().info(f'{msg}')
+        try:
+            self.pub_i32.publish(msg)
+            self.get_logger().info(f'Int32MultiArray (index, n_domino) published with {len(selected_indices)} dominos')
+            self.get_logger().info(f'{msg}')
+        except Exception as e:
+            print(f"[EXCEPTION] ROS2 publish_with_index 예외 발생: {e}")
 
 class PathGUI:
     def __init__(self, ros_node):
@@ -88,20 +150,20 @@ class PathGUI:
         self.pub_btn = tk.Button(self.root, text="Publish", command=self.on_publish)
         self.pub_btn.grid(row=2, column=0, columnspan=4, pady=10)
 
-        # === 우상단 (0,0) 표시 ===
         self.canvas.create_text(
-            480 - 5, 10,  # (x, y): 오른쪽 위에 붙여서
-            text="(0, 0)", anchor="ne",  # 오른쪽 위 기준 정렬
+            480 - 5, 10,
+            text="(0, 0)", anchor="ne",
             fill="blue", font=("Arial", 12, "bold")
         )
 
         self.last_drawn = []
         self.selected_indices = []
         self.n_domino = None
+        self.root.protocol("WM_DELETE_WINDOW", self.on_close)
         self._poll_path()
 
     def _poll_path(self):
-        path = self.ros_node.latest_path
+        path = self.ros_node.bezier_path if len(self.ros_node.bezier_path) > 0 else self.ros_node.latest_path
         if path != self.last_drawn:
             self.last_drawn = list(path)
             self.draw_path(path)
@@ -123,17 +185,15 @@ class PathGUI:
             scale_y = (H - 2*pad) / (max(ys) - min(ys) + 1e-5)
         else:
             scale_y = 1.0
-        # x좌표만 좌우 반전!
         def tx(x): return W - (pad + int((x - min(xs)) * scale_x))
         def ty(y): return pad + int((y - min(ys)) * scale_y)
 
-        # === yaw 계산시 x축 반전 적용! ===
         yaws = []
         for i in range(len(path)):
             if i < len(path) - 1:
                 x1, y1 = path[i]
                 x2, y2 = path[i+1]
-                yaw = math.atan2(y2 - y1, -(x2 - x1))  # x축 반전 적용!
+                yaw = math.atan2(y2 - y1, -(x2 - x1))
             elif len(path) > 1:
                 x1, y1 = path[-2]
                 x2, y2 = path[-1]
@@ -161,6 +221,13 @@ class PathGUI:
             self.canvas.create_line(cx, cy, ex, ey, fill='green', width=2, arrow=tk.LAST, arrowshape=(12,15,6))
 
     def on_publish(self):
+        # 퍼블리셔 핸들, 상태 체크 및 예외 방어
+        if not hasattr(self.ros_node, "pub_pose") or getattr(self.ros_node.pub_pose, "handle", None) is None:
+            print("[WARN] ROS2 퍼블리셔가 이미 소멸되었습니다. Publish를 생략합니다.")
+            return
+        if not rclpy.ok():
+            print("[WARN] ROS2가 이미 종료되어 있어 publish를 생략합니다.")
+            return
         try:
             idx_str = self.idx_entry.get()
             n_domino = int(self.cnt_entry.get())
@@ -174,17 +241,26 @@ class PathGUI:
                 selected_indices.append(idx - 1)
         except ValueError:
             return
-        path = self.ros_node.latest_path
+        path = self.ros_node.bezier_path if len(self.ros_node.bezier_path) > 0 else self.ros_node.latest_path
         if not path:
             return
         for idx in selected_indices:
             if idx < 0 or idx >= len(path):
                 return
-        self.ros_node.publish_posearray(path)
-        self.ros_node.publish_with_index(selected_indices, n_domino)
+        try:
+            self.ros_node.publish_posearray(path)
+            self.ros_node.publish_with_index(selected_indices, n_domino)
+        except Exception as e:
+            print(f"[EXCEPTION] publish 중 예외 발생: {e}")
+            return
         self.selected_indices = selected_indices
         self.n_domino = n_domino
         self.draw_path(path)
+
+    def on_close(self):
+        print("프로그램 종료: ROS2 shutdown 및 Tkinter 종료")
+        rclpy.shutdown()
+        self.root.destroy()
 
     def run(self):
         self.root.mainloop()
@@ -195,7 +271,6 @@ def ros2_spin_thread(node):
             rclpy.spin_once(node, timeout_sec=0.05)
     finally:
         node.destroy_node()
-        rclpy.shutdown()
 
 def main():
     rclpy.init()
