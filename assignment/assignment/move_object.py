@@ -17,7 +17,7 @@ DR_init.__dsr__model = ROBOT_MODEL
 
 def main(args=None):
     rclpy.init(args=args)
-    node = rclpy.create_node("move_block", namespace=ROBOT_ID)
+    node = rclpy.create_node("move_object", namespace=ROBOT_ID)
     
     # publisher -> 조인트 값 계속 쏘는 퍼블리셔
     # subscription -> 시작 입력을 받으면 동작하는 퍼블리셔
