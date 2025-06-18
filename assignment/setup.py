@@ -24,6 +24,7 @@ setup(
             "move_block = assignment.move_block:main",
             "move_lego = assignment.move_lego:main",
             "move_home = assignment.move_home:main",
+            "move_object = assignment.move_object:main"
             
         ],
     },
