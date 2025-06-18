@@ -12,7 +12,7 @@ ROBOT_ID = "dsr01"
 ROBOT_MODEL = "m0609"
 VEL, FIXED_ACC, DOWN_ACC = 100, 100, 30
 FIXED_Z = 150.0
-DOWN_Z = 150.0
+DOWN_Z = 100.0
 FIXED_RX = 41.76
 FIXED_RY = -180.0
 ON, OFF = 1, 0
@@ -34,8 +34,6 @@ def main(args=None):
             set_digital_output,
             get_tool,
             get_tcp,
-            DR_TOOL,
-            
             task_compliance_ctrl,
             set_desired_force,
             DR_FC_MOD_REL,
@@ -78,7 +76,7 @@ def main(args=None):
         movel(pose, vel=VEL, acc=FIXED_ACC, ref=DR_BASE)
 
         down_pose = list(pose)
-        down_pose[2] -= 100.0
+        down_pose[2] -= DOWN_Z
         movel(down_pose, vel=VEL, acc=DOWN_ACC, ref=DR_BASE)
         grip()
 
@@ -88,7 +86,7 @@ def main(args=None):
         movel(pose, vel=VEL, acc=FIXED_ACC, ref=DR_BASE)
 
         go_and_down_pose = list(pose)
-        go_and_down_pose[2] -= 100.0
+        go_and_down_pose[2] -= DOWN_Z
         movel(go_and_down_pose, vel=VEL, acc=DOWN_ACC, ref=DR_BASE)
         task_compliance_ctrl()
         time.sleep(0.1)
@@ -129,59 +127,60 @@ def main(args=None):
 
         # yaw 계산 (라디안 단위)
         yaw = math.atan2(dy, dx)
-        
+
         # 반대 방향으로 30mm 이동
-        distance = 30.0
-        yaw_reverse = yaw + math.pi  # 반대 방향
-        x_offset = x0 + distance * math.cos(yaw_reverse)
-        y_offset = y0 + distance * math.sin(yaw_reverse)
+        yaw_reverse = yaw + math.pi
+        x_offset = x0 + 30.0 * math.cos(yaw_reverse)
+        y_offset = y0 + 30.0 * math.sin(yaw_reverse)
 
         # z 및 각도 설정
         z = p0.position.z * 10
-        qx = p0.orientation.x
-        qy = p0.orientation.y
-        qz = p0.orientation.z
-        qw = p0.orientation.w
+        qx, qy, qz, qw = p0.orientation.x, p0.orientation.y, p0.orientation.z, p0.orientation.w
         _, _, yaw0 = euler_from_quaternion([qx, qy, qz, qw])
-        rz0 = yaw0 * 180.0 / 3.141592
+        rz0 = yaw0 * 180.0 / math.pi
 
-        # 최종 posx 저장
+        # 기존 포즈
+        original_pose = posx(x0, y0, FIXED_Z - DOWN_Z, FIXED_RX, FIXED_RY, rz0)
         reverse_pose = posx(x_offset, y_offset, FIXED_Z, FIXED_RX, FIXED_RY, rz0)
-        print(f"반대 방향으로 30 이동한 포즈: {reverse_pose}")
 
-        return reverse_pose
+        # --- ✅ 마지막 포즈 기준 정방향으로 50mm 이동 ---
+        p_last = pose_array_data[-1]
+        x_last = p_last.position.x * 10 + 200
+        y_last = p_last.position.y * 10 - 225
 
-    def place_horizontal_domino_on_last_two(pose_array, horizontal_pick_pose):
-        """마지막 두 도미노 위 중심에 90도 회전된 도미노를 하나 놓는다."""
-        pose1 = pose_array[-2]
-        pose2 = pose_array[-1]
+        if len(pose_array_data) >= 2:
+            p_before_last = pose_array_data[-2]
+            dx_last = (p_last.position.x - p_before_last.position.x) * 10
+            dy_last = (p_last.position.y - p_before_last.position.y) * 10
+        else:
+            dx_last, dy_last = 1.0, 0.0  # fallback (정방향이 없을 경우)
 
-        # 중심 좌표 계산
-        x_center = (pose1.position.x + pose2.position.x) / 2 * 10 + 200
-        y_center = (pose1.position.y + pose2.position.y) / 2 * 10 - 225
+        yaw_last = math.atan2(dy_last, dx_last)
 
-        # yaw 계산 + 90도 회전
-        _, _, yaw1 = euler_from_quaternion([
-            pose1.orientation.x, pose1.orientation.y,
-            pose1.orientation.z, pose1.orientation.w
-        ])
-        _, _, yaw2 = euler_from_quaternion([
-            pose2.orientation.x, pose2.orientation.y,
-            pose2.orientation.z, pose2.orientation.w
-        ])
-        yaw_center = (yaw1 + yaw2) / 2 + (3.141592 / 2)
-        rz_rotated = yaw_center * 180.0 / 3.141592
+        # 정방향 50mm 이동
+        x_forward = x_last + 50.0 * math.cos(yaw_last)
+        y_forward = y_last + 50.0 * math.sin(yaw_last)
 
-        # 높이는 사용자가 설정
-        custom_z = 82.93
+        q = [p_last.orientation.x, p_last.orientation.y, p_last.orientation.z, p_last.orientation.w]
+        _, _, yaw_last_angle = euler_from_quaternion(q)
+        rz_last = yaw_last_angle * 180.0 / math.pi
 
-        # 최종 포즈
-        target_pose = posx(x_center, y_center, custom_z, FIXED_RX, FIXED_RY, rz_rotated)
-        print(f"[가로 도미노] 위치: {target_pose}")
-        
-        pick(horizontal_pick_pose)   # <-- 사용자가 따로 입력한 좌표
-        place(target_pose)
-        
+        forward_pose = posx(x_forward, y_forward, FIXED_Z, FIXED_RX, FIXED_RY, rz_last)
+
+        # --- ✅ 중간 좌표 계산 (last ↔ forward) ---
+        x_mid = (x_last + x_forward) / 2
+        y_mid = (y_last + y_forward) / 2
+        mid_pose = posx(x_mid, y_mid, FIXED_Z, FIXED_RX, FIXED_RY, rz_last)
+
+        # 로그 출력
+        print(f"📍 원래 포즈: {original_pose}")
+        print(f"↩️ 반대 방향 30mm 이동: {reverse_pose}")
+        print(f"➡️ 정방향 50mm 이동: {forward_pose}")
+        print(f"🔸 중간 포즈 (last~forward): {mid_pose}")
+
+        return original_pose, reverse_pose, forward_pose, mid_pose
+    
+
         # 수신될 때까지 기다리기
     while rclpy.ok():
         tool_name = get_tool()
@@ -201,8 +200,8 @@ def main(args=None):
         home = posj(0, 0, 90.0, 0, 90, 0)
         movej(home, vel=VEL, acc=FIXED_ACC)
         pick_place = posx(180.35, 271.95, FIXED_Z, 41.76, -180.0, -45.47)
-        reverse_pose = save_pose(pose_array_data)
-        horizontal_pick_place = posx(492.66, 258.77, 65.21, 54.69, -179.53, 57.09)
+        original_pose, reverse_pose, forward_pose, mid_pose = save_pose(pose_array_data)
+        horizontal_pick_place = posx(492.66, 258.77, 165.21, 54.69, -179.53, 57.09)
         
         # 포즈 하나씩 movel 수행
         print(pose_array_data)
@@ -226,14 +225,24 @@ def main(args=None):
             
             pick(pick_place)
             place(p)
-            
-        place_horizontal_domino_on_last_two(pose_array_data, horizontal_pick_place)
-
+        
+        # 마지막 피날레 
+        pick(pick_place)
+        place(forward_pose)
+        pick(horizontal_pick_place)
+        place(mid_pose)
+        pick(pick_place)
+        mid_pose[2] += 100
+        place(mid_pose)
+        
+        # 쓰러트리기
         movel(reverse_pose, vel=VEL, acc=FIXED_ACC, ref=DR_BASE)
-        down_pose = list(reverse_pose)
-        down_pose[2] -= 100.0
-        down_pose[5] -= 90
-        movel(down_pose, vel=VEL, acc=FIXED_ACC, ref=DR_BASE)
+        grip()
+        reverse_pose[2] -= DOWN_Z
+        movel(reverse_pose, vel=VEL, acc=FIXED_ACC, ref=DR_BASE)
+        movel(original_pose, vel=VEL, acc=FIXED_ACC, ref=DR_BASE)
+        movej(home, vel=VEL, acc=FIXED_ACC)
+        
         rclpy.shutdown()
 
 
