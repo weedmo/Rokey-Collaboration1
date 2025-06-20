@@ -1,4 +1,122 @@
 # Rokey-Collaboration1
+
+# 🦾 Main Domino Project
+
+> A robotics project that stacks dominoes in a staircase shape and knocks them down using a **Doosan M0609** industrial robot arm.  
+> Built with **ROS 2 (Humble)** and controlled via Python using **precise motion planning, force control**, and **path compensation**.
+
+---
+
+## 🎥 Demo Video
+
+👉 [Watch the demo](https://your-demo-link.com)  
+_A robot arm picks and places dominoes in a staircase formation, then knocks them over._
+
+---
+
+## 🧠 Overview
+
+### Objective
+- Stack dominoes automatically in a precise stair-step formation.
+- Demonstrate realistic pick-and-place control using Doosan’s Python API.
+- Integrate path planning with pose correction and motion execution.
+
+### Technologies Used
+- ROS 2 (Humble)
+- Doosan Robot API (M0609)
+- Python 3, NumPy
+- tf_transformations
+- Skeleton extraction & sampling
+- Force-based movement control
+
+---
+
+## ⚙️ System Flow
+
+```
+Input Image
+    ↓
+Binarization & Skeleton Extraction
+    ↓
+Path Sampling & Stair Logic
+    ↓
+Pose Transformation (XYZ + Yaw)
+    ↓
+Doosan Robot Motion Execution
+```
+
+---
+
+## 📁 Project Structure
+
+```
+domino_project/
+├── domino_move/                 # Robot motion execution
+│   ├── real_move.py
+│   ├── stair_pose_utils.py
+├── image_preprocessor/         # Image → Skeleton processing
+│   └── preprocessor.py
+├── tf_utils/                   # Quaternion and yaw utilities
+│   └── transform_utils.py
+├── data/
+│   └── domino_image.png        # Input image
+└── README.md
+```
+
+---
+
+## 🚀 How to Run
+
+### 1. Source ROS 2 and your workspace
+
+```bash
+source /opt/ros/humble/setup.bash
+source ~/your_ws/install/setup.bash
+```
+
+### 2. Launch the main motion node
+
+```bash
+ros2 run domino_move real_move
+```
+
+This will command the robot to execute the full domino stacking and knocking sequence.
+
+---
+
+## 🔧 Key Components
+
+| Function | Description |
+|---------|-------------|
+| `update_all_converted_poses_with_yaw_based_offset()` | Adjusts all poses using yaw-based offset logic |
+| `apply_stair_pose_from_stack_logic()` | Adds Z-offset for stair-step stacking |
+| `pick()` / `place()` | Executes pick-up and placement motions |
+| `movel()` | Executes straight-line Cartesian motion |
+
+---
+
+## ✅ Highlights
+
+- Stair-shaped stacking: center domino raised by 40mm, sides by 20mm
+- Auto Z compensation based on index and total height
+- Final domino is knocked over using speed or force control
+- Real-time console logging for action feedback
+
+---
+
+## 🌱 Future Improvements
+
+- Add YOLO-based domino detection and pose estimation
+- Integrate optimal path planning and reordering
+- Provide Gazebo simulation support
+
+---
+
+## 👤 Author
+
+- **Junmo Han (한준모)**
+- GitHub: [weedmo](https://github.com/weedmo)
+
 ## ⚙️ Doosan Robot move gear
 
 This project demonstrates a simple **Pick & Place** system using the **Doosan M0609** collaborative robot.
@@ -13,7 +131,7 @@ The robot picks up 4 gears from predefined positions and places them at correspo
 ```bash
 ros2 run assignment move_gear
 ```
-## 🦾 Doosan Robot move block
+
 
 This project demonstrates a **Pick & Place system** using the **Doosan M0609 collaborative robot**.  
 The robot detects the Z-contact point of each block using **force sensing**, and then sorts the blocks into columns based on height.
