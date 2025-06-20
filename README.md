@@ -54,24 +54,6 @@ Doosan Robot Motion Execution
 
 ---
 
-## 📁 Project Structure
-
-```
-domino_project/
-├── domino_move/                 # Robot motion execution
-│   ├── real_move.py
-│   ├── stair_pose_utils.py
-├── image_preprocessor/         # Image → Skeleton processing
-│   └── preprocessor.py
-├── tf_utils/                   # Quaternion and yaw utilities
-│   └── transform_utils.py
-├── data/
-│   └── domino_image.png        # Input image
-└── README.md
-```
-
----
-
 ## 🚀 How to Run
 
 ### 1. Source ROS 2 and your workspace
@@ -84,6 +66,7 @@ source ~/your_ws/install/setup.bash
 ### 2. Launch the main motion node
 
 ```bash
+ros2 launch draw_path draw_path.launch.py 
 ros2 run domino_move real_move
 ```
 
