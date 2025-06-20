@@ -1,6 +1,7 @@
 <p align="center">
   <img src="https://img.shields.io/badge/ROS2-Humble-blue?logo=ros" />
   <img src="https://img.shields.io/badge/Python-3.10-yellow?logo=python" />
+  <img src="https://img.shields.io/badge/OpenCV-4.x-green?logo=opencv" />
   <img src="https://img.shields.io/badge/Doosan--Manipulator-M0609-critical?logo=robotframework" />
   <img src="https://img.shields.io/badge/Doosan--API-v1.0-success?logo=powerbi" />
   <img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg?logo=apache" />
