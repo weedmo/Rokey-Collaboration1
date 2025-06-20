@@ -20,9 +20,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'move=rokey_pjt.move:main',
-            'test=rokey_pjt.test:main'
-            
+            'real_move=rokey_pjt.real_move:main',
         ],
     },
 )
