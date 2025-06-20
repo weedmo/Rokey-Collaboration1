@@ -23,9 +23,6 @@
   </a>
 </p>
 
-> ▶️ Click the image above or [watch on YouTube](https://youtu.be/GL6GqKaTmGw)
-
-
 _A robot arm picks and places dominoes in a staircase formation, then knocks them over._
 
 ---
