@@ -112,7 +112,8 @@ This will command the robot to execute the full domino stacking and knocking seq
 
 For a detailed explanation of this project, please refer to the following document:
 
-👉 [docs/F-1_협동1_한준모_배재성_김동호_김예신(중도 포기).pdf](docs/F-1_협동1_한준모_배재성_김동호_김예신(중도 포기).pdf)
+👉 [F-1_협동1_한준모_배재성_김동호_김예신(중도 포기).pdf](https://github.com/weedmo/Rokey-Collaboration1/blob/main/docs/F-1_%ED%98%91%EB%8F%991_%ED%95%9C%EC%A4%80%EB%AA%A8_%EB%B0%B0%EC%9E%AC%EC%84%B1_%EA%B9%80%EB%8F%99%ED%98%B8_%EA%B9%80%EC%98%88%EC%8B%A0(%EC%A4%91%EB%8F%84%20%ED%8F%AC%EA%B8%B0).pdf)
+
 
 ---
 # ETC
