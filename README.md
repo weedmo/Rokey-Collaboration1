@@ -8,8 +8,15 @@
 ---
 
 ## 🎥 Demo Video
+<p align="center">
+  <a href="https://youtu.be/GL6GqKaTmGw" target="_blank">
+    <img src="https://img.youtube.com/vi/GL6GqKaTmGw/0.jpg" alt="Domino Demo" width="480">
+  </a>
+</p>
 
-👉 [Watch the demo](https://your-demo-link.com)  
+> ▶️ Click the image above or [watch on YouTube](https://youtu.be/GL6GqKaTmGw)
+
+
 _A robot arm picks and places dominoes in a staircase formation, then knocks them over._
 
 ---
