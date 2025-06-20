@@ -108,6 +108,13 @@ This will command the robot to execute the full domino stacking and knocking seq
 - Provide Gazebo simulation support
 
 ---
+## 📄 Documentation
+
+For a detailed explanation of this project, please refer to the following document:
+
+👉 [docs/F-1_협동1_한준모_배재성_김동호_김예신(중도 포기).pdf](docs/F-1_협동1_한준모_배재성_김동호_김예신(중도 포기).pdf)
+
+---
 # ETC
 
 ## ⚙️ Doosan Robot move gear
