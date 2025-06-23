@@ -102,5 +102,4 @@ ros2 launch draw_path path_resampler.py --ros-args -p interval:=5.0
 
 - 작성자: 배재성 (JaeSeong-Bae)
 - Contact: github[[jsbae-RL](https://github.com/jsbae-RL)]
-- License: MIT
 
