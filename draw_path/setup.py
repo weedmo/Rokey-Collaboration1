@@ -23,8 +23,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'draw_path=draw_path.draw_path_ver3:main',
-            'cal_yaw=draw_path.cal_posearray_ver5:main',
+            'draw_path=draw_path.draw_path:main',
+            'cal_yaw=draw_path.cal_posearray:main',
             'pose_downsample=draw_path.pose_resampled:main'
         ],
     },

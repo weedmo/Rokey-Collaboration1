@@ -40,7 +40,8 @@ _A robot arm picks and places dominoes in a staircase formation, then knocks the
 - Doosan Robot API (M0609)
 - Python 3, NumPy
 - tf_transformations
-- Skeleton extraction & sampling
+- Path Extract
+  - [path extract Readme](draw_path/README.md)
 - Force-based movement control
 
 ---
@@ -50,11 +51,11 @@ _A robot arm picks and places dominoes in a staircase formation, then knocks the
 ```
 Input Image
     ↓
-Binarization & Skeleton Extraction
+Draw Path
     ↓
-Path Sampling & Stair Logic
+Path Sampling
     ↓
-Pose Transformation (XYZ + Yaw)
+Pose Transformation (XYZ + Yaw) & Interpolation(Beizer)
     ↓
 Doosan Robot Motion Execution
 ```
