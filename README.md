@@ -20,8 +20,9 @@
 ## 🎥 Demo Video
 
 <p align="center">
-  <iframe width="560" height="315" src="https://youtu.be/GL6GqKaTmGw?si=oPguT1jR8t6djL9I" frameborder="0" allowfullscreen></iframe>
+  <iframe width="560" height="315" src="https://www.youtube.com/embed/GL6GqKaTmGw?si=oPguT1jR8t6djL9I" frameborder="0" allowfullscreen></iframe>
 </p>
+
 _A robot arm picks and places dominoes in a staircase formation, then knocks them over._
 
 ---
