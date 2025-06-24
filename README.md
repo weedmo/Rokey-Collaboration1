@@ -18,11 +18,14 @@
 ---
 
 ## 🎥 Demo Video
+
+
 <p align="center">
-  <a href="https://youtu.be/GL6GqKaTmGw" target="_blank">
-    <img src="https://img.youtube.com/vi/GL6GqKaTmGw/0.jpg" alt="Domino Demo" width="480">
-  </a>
+  <video src="https://github.com/user-attachments/assets/d920f07d-990f-41e8-83e0-f0d15d077895/06-18-2025%2012_43_21%20PM.webm" controls width="45%"></video>
+  &nbsp;&nbsp;
+  <iframe width="45%" height="250" src="https://www.youtube.com/embed/alLSiuHvEhA?si=x_XrFJaK9UR9TzTw" frameborder="0" allowfullscreen></iframe>
 </p>
+
 
 _A robot arm picks and places dominoes in a staircase formation, then knocks them over._
 
