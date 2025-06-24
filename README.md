@@ -19,8 +19,6 @@
 
 ## 🎥 Demo Video
 
-## 🎥 Demo Video
-
 <p align="center">
   <a href="https://youtu.be/GL6GqKaTmGw" target="_blank">
     <img src="https://img.youtube.com/vi/GL6GqKaTmGw/0.jpg" alt="Demo Video" width="560"/>
@@ -175,11 +173,22 @@ ros2 run assignment move_lego
 ## 🦾 Doosan Robot move object
 
 
-<p align="center">
-  <a href="https://youtu.be/alLSiuHvEhA" target="_blank">
-    <img src="https://img.youtube.com/vi/alLSiuHvEhA/0.jpg" alt="Demo Video" width="560"/>
-  </a>
-</p>
+<table align="center">
+  <tr>
+    <td align="center">
+      <a href="https://youtu.be/alLSiuHvEhA" target="_blank">
+        <img src="https://img.youtube.com/vi/alLSiuHvEhA/0.jpg" alt="YouTube Demo" width="300"/>
+      </a>
+      <div><sub>YouTube Demo</sub></div>
+    </td>
+    <td align="center">
+      <a href="https://github.com/user-attachments/assets/b0658a19-593e-4346-afa8-f8d984dabce4/Screencast%20from%2006-18-2025%2012_43_21%20PM.webm" target="_blank">
+        <img src="https://img.icons8.com/ios-filled/100/video.png" width="80" />
+      </a>
+      <div><sub>Screencast (.webm)</sub></div>
+    </td>
+  </tr>
+</table>
 
 
 
