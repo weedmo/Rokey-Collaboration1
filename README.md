@@ -179,7 +179,12 @@ ros2 run assignment move_lego
   </a>
 </p>
 
-[Screencast from 06-18-2025 12_43_21 PM.webm](https://github.com/user-attachments/assets/406c9d46-4f59-4588-b5a2-31c7fdd9cb25)
+<p align="center">
+  <a href="https://github.com/user-attachments/assets/406c9d46-4f59-4588-b5a2-31c7fdd9cb25/Screencast%20from%2006-18-2025%2012_43_21%20PM.webm" target="_blank">
+    📹 Screencast from 06-18-2025 12:43 PM (.webm)
+  </a>
+</p>
+
 
 
 
