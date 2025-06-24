@@ -173,22 +173,13 @@ ros2 run assignment move_lego
 ## 🦾 Doosan Robot move object
 
 
-<table align="center">
-  <tr>
-    <td align="center">
-      <a href="https://youtu.be/alLSiuHvEhA" target="_blank">
-        <img src="https://img.youtube.com/vi/alLSiuHvEhA/0.jpg" alt="YouTube Demo" width="300"/>
-      </a>
-      <div><sub>YouTube Demo</sub></div>
-    </td>
-    <td align="center">
-      <a href="https://github.com/user-attachments/assets/b0658a19-593e-4346-afa8-f8d984dabce4/Screencast%20from%2006-18-2025%2012_43_21%20PM.webm" target="_blank">
-        <img src="https://img.icons8.com/ios-filled/100/video.png" width="80" />
-      </a>
-      <div><sub>Screencast (.webm)</sub></div>
-    </td>
-  </tr>
-</table>
+<p align="center">
+  <a href="https://youtu.be/alLSiuHvEhA" target="_blank">
+    <img src="https://img.youtube.com/vi/alLSiuHvEhA/0.jpg" alt="Demo Video" width="560"/>
+  </a>
+</p>
+
+[Screencast from 06-18-2025 12_43_21 PM.webm](https://github.com/user-attachments/assets/406c9d46-4f59-4588-b5a2-31c7fdd9cb25)
 
 
 
