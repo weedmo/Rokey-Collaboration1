@@ -174,8 +174,11 @@ ros2 run assignment move_lego
 
 
 <p align="center">
-  <iframe width="560" height="315" src="https://www.youtube.com/embed/alLSiuHvEhA?si=ujWAZFZmWEe_ReNX" frameborder="0" allowfullscreen></iframe>
+  <a href="https://youtu.be/alLSiuHvEhA" target="_blank">
+    <img src="https://img.youtube.com/vi/alLSiuHvEhA/0.jpg" alt="Demo Video" width="560"/>
+  </a>
 </p>
+
 
 
 ### demo run
