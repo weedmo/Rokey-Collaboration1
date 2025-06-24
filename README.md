@@ -168,12 +168,6 @@ ros2 run assignment move_lego
 
 ## 🦾 Doosan Robot move object
 
-<p align="center">
-  <video src="https://github.com/user-attachments/assets/d920f07d-990f-41e8-83e0-f0d15d077895/06-18-2025%2012_43_21%20PM.webm" controls width="45%"></video>
-  &nbsp;&nbsp;
-  <iframe width="45%" height="250" src="https://www.youtube.com/embed/alLSiuHvEhA?si=x_XrFJaK9UR9TzTw" frameborder="0" allowfullscreen></iframe>
-</p>
-
 
 ### demo run
 ```bash
